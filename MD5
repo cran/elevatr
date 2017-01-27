@@ -1,4 +1,4 @@
-f20e47ac779fc8aaf6b8f8ce91826af0 *DESCRIPTION
+4ad06cab0cfbda478e1917c6d1a38e9b *DESCRIPTION
 c783dc4f5717288f3e131dae5b33072d *NAMESPACE
 2fadec0bff427b577f84f8d48bd9b876 *R/data.R
 94c90e6fa4372d069d7d488e417ec7e7 *R/elevatr.R
@@ -10,12 +10,9 @@ a1948bf1512da009393c80bc471213b9 *README.md
 b3b2e9cf1b533a6af12f5c92b8f1e6b2 *data/lake.rda
 588ae9cc2a3be511cc580a968c93a460 *data/pt_df.rda
 4f4d51f8c0e56c2464c500ed02db4d84 *data/sp_big.rda
-100f4a65c0dc8c148d19d765b22bebf0 *inst/doc/Introduction.R
-8f2b495705dfcfc406f95f2f724753d6 *inst/doc/Introduction.Rmd
-0a7eebafef1e94d0a161f4b25f054e8e *inst/doc/Introduction.html
-6c47d4b6171e50c7215239b627973a40 *inst/doc/introduction_to_elevatr.R
-fb954cd5378440c56fb083499a50df4e *inst/doc/introduction_to_elevatr.Rmd
-cdda409fd50a381fcf1c6b05d6441d4c *inst/doc/introduction_to_elevatr.html
+420c0d5373051c61dde14e393fb346d8 *inst/doc/introduction_to_elevatr.R
+15d542e065ec949d1197d19bea09df35 *inst/doc/introduction_to_elevatr.Rmd
+c102989742664d398654ab379c74cc8d *inst/doc/introduction_to_elevatr.html
 0aa0cf11eafac7d765e5268f67cb9808 *man/elevatr.Rd
 0c034081c1674bd458f0b291b5bedeb2 *man/get_api_key.Rd
 0ce29c0f16b310a75577fb7f6fcda5ec *man/get_aws_terrain.Rd

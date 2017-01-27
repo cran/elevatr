@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jeffrey W. Hollister" />
 
-<meta name="date" content="2017-01-13" />
+<meta name="date" content="2017-01-27" />
 
 <title>Accessing elevation data in R with the elevatr package</title>
 
@@ -216,7 +216,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Accessing elevation data in R with the elevatr package</h1>
 <h4 class="author"><em>Jeffrey W. Hollister</em></h4>
-<h4 class="date"><em>2017-01-13</em></h4>
+<h4 class="date"><em>2017-01-27</em></h4>
 
 </div>
 
@@ -318,28 +318,10 @@ examp_df2</code></pre>
 ## 8         L       134     meters -71.95443 41.83915     TRUE
 ## 9         M         0     meters -71.41128 41.48341     TRUE
 ## 10        M       139     meters -71.26831 43.12234     TRUE</code></pre>
-<p>The process is the same for a SpatialPoints and a SpatialPointsDataFrame object.</p>
-<pre class="r"><code># Example using SpatialPoints prj is taken from the SpatialPoints object
-# api_key is taken from environment variable mapzen_key
-sp_elev &lt;- get_elev_point(examp_sp)
-
-# Compare
-examp_sp</code></pre>
-<pre><code>## class       : SpatialPoints 
-## features    : 10 
-## extent      : -72.91463, -71.26831, 41.42377, 44.74525  (xmin, xmax, ymin, ymax)
-## coord. ref. : +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0</code></pre>
-<pre class="r"><code>sp_elev</code></pre>
-<pre><code>## class       : SpatialPointsDataFrame 
-## features    : 10 
-## extent      : -72.91463, -71.26831, 41.42377, 44.74525  (xmin, xmax, ymin, ymax)
-## coord. ref. : +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 
-## variables   : 2
-## names       : elevation, elev_units 
-## min values  :         0,     meters 
-## max values  :        79,     meters</code></pre>
-<pre class="r"><code># Example using SpatialPoints prj is taken from the SpatialPoints object
-# api_key is taken from environment variable mapzen_key
+<p>The process is the same for a SpatialPoints and a SpatialPointsDataFrame object. The SpatialPointsDataFrame example is shown below.</p>
+<pre class="r"><code># Example using SpatialPointsDataFrame prj is taken from the
+# SpatialPointsDataFrame object api_key is taken from environment variable
+# mapzen_key
 spdf_elev &lt;- get_elev_point(examp_spdf)
 
 # Compare
@@ -360,7 +342,7 @@ examp_spdf</code></pre>
 ## variables   : 3
 ## names       : category, elevation, elev_units 
 ## min values  :        H,         0,     meters 
-## max values  :        M,        79,     meters</code></pre>
+## max values  :        M,       583,     meters</code></pre>
 </div>
 </div>
 <div id="usgs-elevation-point-query-service" class="section level2">
@@ -405,7 +387,7 @@ sp_elev_epqs</code></pre>
 ## variables   : 2
 ## names       : elevation, elev_units 
 ## min values  :      0.00,     meters 
-## max values  :     79.47,     meters</code></pre>
+## max values  :    581.72,     meters</code></pre>
 <pre class="r"><code>spdf_elev_epqs &lt;- get_elev_point(examp_spdf, src = &quot;epqs&quot;)
 spdf_elev_epqs</code></pre>
 <pre><code>## class       : SpatialPointsDataFrame 
@@ -415,7 +397,7 @@ spdf_elev_epqs</code></pre>
 ## variables   : 3
 ## names       : category, elevation, elev_units 
 ## min values  :        H,      0.00,     meters 
-## max values  :        M,     79.47,     meters</code></pre>
+## max values  :        M,    581.72,     meters</code></pre>
 </div>
 </div>
 </div>
@@ -466,7 +448,7 @@ get_elev_raster(lake, z = 5, config = timeout(5))</code></pre>
 ## extent      : 1178792, 2231072, 230125, 1356865  (xmin, xmax, ymin, ymax)
 ## coord. ref. : +proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0 
 ## data source : in memory
-## names       : file12e247c61c36 
+## names       : file2be3c4aa4a8 
 ## values      : -299.7913, 1540.508  (min, max)</code></pre>
 <p>Lastly, multiple configurations may be passed. Below is an example combining <code>httr::timeout()</code> with <code>httr::verbose()</code>.</p>
 <pre class="r"><code># Increase timeout:
@@ -477,7 +459,7 @@ get_elev_raster(lake, z = 5, config = c(verbose(), timeout(5)))</code></pre>
 ## extent      : 1178792, 2231072, 230125, 1356865  (xmin, xmax, ymin, ymax)
 ## coord. ref. : +proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0 
 ## data source : in memory
-## names       : file12e25c005783 
+## names       : file2be31797e7a9 
 ## values      : -299.7913, 1540.508  (min, max)</code></pre>
 </div>
 </div>
