@@ -25,7 +25,17 @@ library("knitr")
 library("elevatr")
 library("httr")
 library("prettyunits")
-opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
+NOT_CRAN <- identical(tolower(Sys.getenv("NOT_CRAN")), "true")
+knitr::opts_chunk$set(purl = NOT_CRAN, 
+                      eval = NOT_CRAN,
+                      fig.width = 5, 
+                      fig.height = 5, 
+                      tidy = TRUE)
+```
+
+```{r environ, echo=FALSE}
+key <- readRDS("../tests/testthat/key_file.rds")
+Sys.setenv(mapzen_key=key)
 ```
 
 # Introduction to `elevatr`
@@ -112,7 +122,7 @@ Sys.sleep(2)
 
 The process is the same for a SpatialPoints and a SpatialPointsDataFrame object.  The SpatialPointsDataFrame example is shown below.
 
-```{r examples_sp2, eval=T}
+```{r examples_sp2}
 # Example using SpatialPointsDataFrame
 # prj is taken from the SpatialPointsDataFrame object
 # api_key is taken from environment variable mapzen_key
@@ -174,7 +184,7 @@ plot(lake, add=TRUE)
 # data.frame example
 elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
 plot(elevation_df)
-plot(examp_sp, add = T)
+plot(examp_sp, add = TRUE)
 ```
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is available in the [Mapzen Documentation on ground resolution](https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution).
@@ -183,12 +193,12 @@ In addition the the required arguments (`locations`, `z`, and  `prj` for data fr
 
 ```{r expand}
 # Bounding box on edge
-elev_edge<-get_elev_raster(lake, z = 10)
+elev_edge<-get_elev_raster(lake, z = 10, api_key = key)
 plot(elev_edge)
 plot(lake, add = TRUE)
 
 # Use expand to grab additional tiles
-elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
+elev_expand<-get_elev_raster(lake, z = 10, expand = 1500, api_key = key)
 plot(elev_expand)
 plot(lake, add = TRUE)
 ```
@@ -197,14 +207,14 @@ Lastly, `...` provides the ability to pass additional arguments to `httr::GET` w
 
 ```{r timeout}
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
+get_elev_raster(lake, z = 5, config = timeout(5), api_key = key)
 ```
 
 Lastly, multiple configurations may be passed.  Below is an example combining `httr::timeout()` with `httr::verbose()`.
 
 ```{r timeout_verbose}
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
+get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)), api_key = key)
 ```
 
 ## Terrain Tiles on Amazon Web Services (AWS)

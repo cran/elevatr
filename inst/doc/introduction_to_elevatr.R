@@ -9,7 +9,16 @@ library("knitr")
 library("elevatr")
 library("httr")
 library("prettyunits")
-opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
+NOT_CRAN <- identical(tolower(Sys.getenv("NOT_CRAN")), "true")
+knitr::opts_chunk$set(purl = NOT_CRAN, 
+                      eval = NOT_CRAN,
+                      fig.width = 5, 
+                      fig.height = 5, 
+                      tidy = TRUE)
+
+## ----environ, echo=FALSE-------------------------------------------------
+key <- readRDS("../tests/testthat/key_file.rds")
+Sys.setenv(mapzen_key=key)
 
 ## ----api_key, eval=FALSE-------------------------------------------------
 #  cat("mapzen_key=mapzen-XXXXXXX\n",
@@ -57,7 +66,7 @@ data.frame(df2_elev)
 ## ----sleep2, echo=F------------------------------------------------------
 Sys.sleep(2)
 
-## ----examples_sp2, eval=T------------------------------------------------
+## ----examples_sp2--------------------------------------------------------
 # Example using SpatialPointsDataFrame
 # prj is taken from the SpatialPointsDataFrame object
 # api_key is taken from environment variable mapzen_key
@@ -87,26 +96,26 @@ plot(lake, add=TRUE)
 # data.frame example
 elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
 plot(elevation_df)
-plot(examp_sp, add = T)
+plot(examp_sp, add = TRUE)
 
 ## ----expand--------------------------------------------------------------
 # Bounding box on edge
-elev_edge<-get_elev_raster(lake, z = 10)
+elev_edge<-get_elev_raster(lake, z = 10, api_key = key)
 plot(elev_edge)
 plot(lake, add = TRUE)
 
 # Use expand to grab additional tiles
-elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
+elev_expand<-get_elev_raster(lake, z = 10, expand = 1500, api_key = key)
 plot(elev_expand)
 plot(lake, add = TRUE)
 
 ## ----timeout-------------------------------------------------------------
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
+get_elev_raster(lake, z = 5, config = timeout(5), api_key = key)
 
 ## ----timeout_verbose-----------------------------------------------------
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
+get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)), api_key = key)
 
 ## ----aws-----------------------------------------------------------------
 elevation <- get_elev_raster(lake,z = 9, src = "aws")

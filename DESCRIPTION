@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.1.1
+Version: 0.1.3
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
              person("Tarak Shah", role = "ctb"))    
@@ -26,8 +26,8 @@ RoxygenNote: 5.0.1
 Suggests: testthat, knitr, rmarkdown, formatR
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2017-01-27 13:17:55 UTC; jhollist
+Packaged: 2017-03-16 14:15:49 UTC; jhollist
 Author: Jeffrey Hollister [aut, cre],
   Tarak Shah [ctb]
 Repository: CRAN
-Date/Publication: 2017-01-27 15:48:15
+Date/Publication: 2017-03-16 15:26:42
