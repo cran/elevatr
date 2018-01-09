@@ -3,6 +3,7 @@ data("pt_df")
 data("sp_big")
 library(sp)
 library(raster)
+library(rgdal)
 
 
 ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
@@ -47,13 +48,14 @@ test_that("loc_check errors correctly", {
 test_that("loc_check assigns prj correctly",{
   skip_on_cran()
   skip_on_appveyor()
-  expect_equal(proj4string(get_elev_point(locations = sp_sm, prj = ll_prj)),
-               ll_prj)
+  key <- readRDS("key_file.rds")
+  expect_equal(proj4string(get_elev_point(locations = sp_sm, prj = ll_prj, 
+                                          api_key = key)),ll_prj)
   Sys.sleep(10)
-  expect_equal(proj4string(get_elev_point(locations = spdf_sm, prj = ll_prj)),
-               ll_prj)
+  expect_equal(proj4string(get_elev_point(locations = spdf_sm, prj = ll_prj, 
+                                          api_key = key)),ll_prj)
   Sys.sleep(10)
-  expect_equal(proj4string(get_elev_point(locations = rast, prj = ll_prj)),
-               ll_prj)
+  expect_equal(proj4string(get_elev_point(locations = rast, prj = ll_prj, 
+                                          api_key = key)), ll_prj)
   Sys.sleep(10)
 })

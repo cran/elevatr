@@ -64,6 +64,11 @@
 get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
                            api_key = get_api_key(src), expand = NULL, ...){
   src <- match.arg(src)
+  if(src=="mapzen"){
+    warning("src 'mapzen' is deprecated and will cease to function after \
+            2018-01-31 due to shutdown of Mapzen; Use 'aws' instead.", 
+            call. = FALSE)
+  }
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
@@ -130,7 +135,7 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
                     api_key)
     }
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite = TRUE), ...)
-    if (httr::http_type(resp) != "image/tif") {
+    if (httr::http_type(resp) != "image/tiff") {
       stop("API did not return tif", call. = FALSE)
     } 
     dem_list[[i]] <- raster::raster(tmpfile)
@@ -194,7 +199,7 @@ get_aws_terrain <- function(bbx, z, prj,expand=NULL, ...){
     tmpfile <- tempfile()
     url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
-    if (httr::http_type(resp) != "image/tif") {
+    if (httr::http_type(resp) != "image/tiff") {
       stop("API did not return tif", call. = FALSE)
     } 
     dem_list[[i]] <- raster::raster(tmpfile)
