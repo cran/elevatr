@@ -10,11 +10,9 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://mapzen.com/documentation/terrain-tiles/}
 }
 \usage{
-get_aws_terrain(bbx, z, prj, expand = NULL, ...)
+get_aws_terrain(locations, z, prj, expand = NULL, ...)
 }
 \arguments{
-\item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
-
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
 details on zoom and resolution see the documentation from Mapzen at 
@@ -32,15 +30,12 @@ usage is to adjust timeout.  This is done as
 \code{config=timeout(x)} where \code{x} is a numeric value in 
 seconds.  Multiple configuration functions may be passed as a 
 vector.}
+
+\item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
 }
 \description{
 This function uses the AWS Terrain Tile service to retrieve an elevation
 raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
-input and returns a single raster object covering that extent.  The data is
-the same as that available via the Mapzen tiles but does not require a key.  
-It is best used if rate limits are causing failures on the Mapzen service or 
-if you are needing to access the terrain tiles via an AWS instance.  These 
-tiles are not cached so accessing them via a local/non-AWS machine will be 
-slower than the Mapzen tiles.
+input and returns a single raster object covering that extent.
 }
 \keyword{internal}
