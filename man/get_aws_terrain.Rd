@@ -7,7 +7,7 @@
 Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
         content courtesy of the U.S. Geological Survey and ETOPO1 content 
         courtesy of U.S. National Oceanic and Atmospheric Administration. 
-        \url{https://mapzen.com/documentation/terrain-tiles/}
+        \url{https://github.com/tilezen/joerd/tree/master/docs}
 }
 \usage{
 get_aws_terrain(locations, z, prj, expand = NULL, ...)
@@ -16,7 +16,7 @@ get_aws_terrain(locations, z, prj, expand = NULL, ...)
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
 details on zoom and resolution see the documentation from Mapzen at 
-\url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
+\url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}}
 
 \item{prj}{PROJ.4 string for input bbox}
 

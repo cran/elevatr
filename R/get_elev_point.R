@@ -1,8 +1,8 @@
 #' Get Point Elevation
 #' 
-#' Several web services provide access to point elevations.  This function 
-#' provides access to one of those.  Currently it uses the USGS Elevation Point 
-#' Query Service (US Only).  The function accepts a \code{data.frame} of x 
+#' This function provides access to point elevations using either the USGS 
+#' Elevation Point Query Service (US Only) or by extracting point elevations 
+#' from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x 
 #' (long) and y (lat) or a \code{SpatialPoints}/\code{SpatialPointsDataFame} as 
 #' input.  A SpatialPointsDataFrame is returned with elevation as an added 
 #' \code{data.frame}.
@@ -28,7 +28,7 @@
 #'            defualt of 5 is used, but this uses a raster with a large ~4-5 km 
 #'            pixel.  Additionally, the source data changes as zoom levels 
 #'            increase.  
-#'            Read \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution} 
+#'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
 #'            for details.  
 #' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
 #'         in the projection specified by the \code{prj} argument.
@@ -45,6 +45,21 @@
 #' get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
 #' get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
+#' 
+#' # Code to split into a loop and grab point at a time.
+#' # This is usually faster for points that are spread apart 
+#'  
+#' library(dplyr)
+#' 
+#' elev <- vector("numeric", length = nrow(mts))
+#' pb <- progress_estimated(length(elev))
+#' for(i in seq_along(mts)){
+#' pb$tick()$print()
+#' elev[i]<-suppressMessages(get_elev_point(locations = mts[i,], prj = ll_prj, 
+#'                                         src = "aws", z = 14)$elevation)
+#'                                         }
+#' mts_elev <- cbind(mts, elev)
+#' mts_elev
 #' }
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   
@@ -98,7 +113,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 #' @export
 #' @keywords internal
 get_epqs <- function(locations, units = c("meters","feet")){
-  base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
+  
+  base_url <- "https://nationalmap.gov/epqs/pqs.php?"
   if(match.arg(units) == "meters"){
     units <- "Meters"
   } else if(match.arg(units) == "feet"){
@@ -128,6 +144,9 @@ get_epqs <- function(locations, units = c("meters","feet")){
     pb$tick()
     Sys.sleep(1 / 100)
   }
+  
+  # For areas without epqs values that return -1000000, switch to NA
+  locations[locations$elevation == -1000000] <- NA
   location_list <- list(locations, units)
   location_list
 }
@@ -145,7 +164,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
-#'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}.  
+#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.  
 #'           default value is 5 is supplied.   
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'aws' are handled in R as the AWS terrain tiles are served in 
