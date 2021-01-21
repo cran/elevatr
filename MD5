@@ -1,10 +1,10 @@
-10df7e7b4f555e920d114e6119f9befa *DESCRIPTION
-4b0b24dbacaff2c9c27348440b51127c *NAMESPACE
+604317c767fafa08a8ea296f8428d1d6 *DESCRIPTION
+2462f2f52c9f071cf0ef4dd282887178 *NAMESPACE
 d9a5c33b4237ec4cc9c2958d8c2f88a2 *R/data.R
 9ed60f4bfa6616101b6db2dc54b2bf60 *R/elevatr.R
 48e38f3d42fd92820cd50b2f3e8ff309 *R/get_elev_point.R
 7441869664f4577b1415d85c059b420f *R/get_elev_raster.R
-1d9377291bf4d1051eb8658c841aff58 *R/internal.R
+6cadae1a33bb10489b33fc59daab9d9f *R/internal.R
 7a62f1ab1d6511d90c745603e96360ba *R/sysdata.rda
 98333281f722218eb867873ff0fd725c *R/zzz.R
 3bf7043c6ef69535d2245c83dbe281be *README.md
@@ -14,8 +14,8 @@ b7dcc198b387b2c353d3211edecbb819 *data/lake.rda
 3dc06a3a90328350c51fd9f030dfdbdd *data/sp_big.rda
 2b586364cb48bb4ae45498ffafe837e6 *inst/CITATION
 f3e47ce0b4e2883ce2a24dfcc79d2e82 *inst/doc/introduction_to_elevatr.R
-9a3ceddf916b72ba5feb14de8806ca1e *inst/doc/introduction_to_elevatr.Rmd
-73f47c33092ef2b80da51023a7b00010 *inst/doc/introduction_to_elevatr.html
+f229caa0bb717b2065c8d189e0678bfa *inst/doc/introduction_to_elevatr.Rmd
+cf5cd8638d46d94b63af6178195c680f *inst/doc/introduction_to_elevatr.html
 6fef511762808dae3bef108a6bffcc34 *man/bbox_to_sp.Rd
 1260ebb477b151e55424433bdfdfb293 *man/clip_it.Rd
 38cfde5a97807daecc8bdd841d1d45f8 *man/elevatr.Rd
@@ -35,7 +35,7 @@ de86fd4b50a81ecbb138351babe640d2 *man/get_elev_raster.Rd
 8178803de23e57e1d0593a2bb1af7690 *man/pt_df.Rd
 54df2d67d83e2f2c04b09d10ebc211fc *man/sp_big.Rd
 0b025ccfe2fc10de35124bfc27b538b6 *tests/testthat.R
-4bd5cc1c4475634e50d489a8bb50e1c7 *tests/testthat/test-get_elev_point.R
-080481dcb2096a1573fae35681f2550c *tests/testthat/test-get_elev_raster.R
-a86a031ccd51e77344f1dd3d9796324c *tests/testthat/test-internal.R
-9a3ceddf916b72ba5feb14de8806ca1e *vignettes/introduction_to_elevatr.Rmd
+41f49c5bba642411be371d70d736bfbb *tests/testthat/test-get_elev_point.R
+3a323a1fffeade17f30a5f7195097bf7 *tests/testthat/test-get_elev_raster.R
+24dfd0b7bc9e2d4a4a7b0c737a4e5eef *tests/testthat/test-internal.R
+f229caa0bb717b2065c8d189e0678bfa *vignettes/introduction_to_elevatr.Rmd
