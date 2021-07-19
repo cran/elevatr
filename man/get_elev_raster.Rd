@@ -8,7 +8,7 @@ get_elev_raster(
   locations,
   z,
   prj = NULL,
-  src = c("aws", "gl3", "gl1", "alos"),
+  src = c("aws", "gl3", "gl1", "alos", "srtm15plus"),
   expand = NULL,
   clip = c("tile", "bbox", "locations"),
   verbose = TRUE,
@@ -27,19 +27,23 @@ details on zoom and resolution see the documentation from Mapzen at
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 The z is not required for the OpenTopography data sources.}
 
-\item{prj}{A PROJ.4 string defining the projection of the locations argument. 
-If a \code{sp} or \code{raster} object is provided, the PROJ.4 
-string will be taken from that.  This argument is required for a 
-\code{data.frame} of locations."}
+\item{prj}{A string defining the projection of the locations argument. The 
+string needs to be an acceptable SRS_string for 
+\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
+object, a \code{sp} object or a \code{raster} object 
+is provided, the string will be taken from that.  This 
+argument is required for a \code{data.frame} of locations.}
 
 \item{src}{A character indicating which API to use.  Currently supports "aws" 
-and "gl3", "gl1", or "alos" from the OpenTopography API global 
+and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global 
 datasets. "aws" is the default.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
-be used for features that fall close to the edge of a tile and 
-additional area around the feature is desired. Default is NULL.}
+be used for features that fall close to the edge of a tile or 
+for retrieving additional area around the feature. If the 
+feature is a single point, the area it returns will be small if 
+clip is set to "bbox". Default is NULL.}
 
 \item{clip}{A character value used to determine clipping of returned DEM.
 The default value is "tile" which returns the full tiles.  Other 
@@ -68,7 +72,7 @@ can be overriden with this argument set to TRUE.}
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
-Function returns a \code{SpatialPointsDataFrame} in the projection 
+Function returns a \code{RasterLayer} in the projection 
         specified by the \code{prj} argument.
 }
 \description{
@@ -79,7 +83,7 @@ of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A
 \code{raster} object is returned.
 }
 \details{
-Currently, the \code{get_elev_raster} function utilizes  the 
+Currently, the \code{get_elev_raster} function utilizes the 
          Amazon Web Services 
          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
          tiles and the Open Topography Global Datasets API 
@@ -93,13 +97,17 @@ Currently, the \code{get_elev_raster} function utilizes  the
 }
 \examples{
 \dontrun{
+data(lake)
+
 loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
                                max=sp::bbox(lake)[1,2]),
                      y = runif(6,min=sp::bbox(lake)[2,1], 
                                max=sp::bbox(lake)[2,2]))
-x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake), z=10)
+# Example for PROJ > 5.2.0
+x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
 
-data(lake)
+# Example for PROJ < 5.2.0 
+x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
 x <- get_elev_raster(lake, z = 12)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 }

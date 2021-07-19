@@ -10,7 +10,15 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://github.com/tilezen/joerd/tree/master/docs}
 }
 \usage{
-get_aws_terrain(locations, z, prj, expand = NULL, ...)
+get_aws_terrain(
+  locations,
+  z,
+  prj,
+  expand = NULL,
+  ncpu = future::availableCores() - 1,
+  serial = NULL,
+  ...
+)
 }
 \arguments{
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
@@ -18,12 +26,22 @@ of the resultant raster is determined by the zoom and latitude.  For
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}}
 
-\item{prj}{PROJ.4 string for input bbox}
+\item{prj}{A string defining the projection of the locations argument. The 
+string needs to be an acceptable SRS_string for 
+\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
+object, a \code{sp} object or a \code{raster} object 
+is provided, the string will be taken from that.  This 
+argument is required for a \code{data.frame} of locations.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
 be used for features that fall close to the edge of a tile and 
 additional area around the feature is desired. Default is NULL.}
+
+\item{ncpu}{Number of CPU's to use when downloading aws tiles.}
+
+\item{serial}{Logical to determine if API should be hit in serial or in 
+parallel.  TRUE will use purrr, FALSE will use furrr.}
 
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
 usage is to adjust timeout.  This is done as 

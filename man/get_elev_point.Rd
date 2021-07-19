@@ -4,7 +4,13 @@
 \alias{get_elev_point}
 \title{Get Point Elevation}
 \usage{
-get_elev_point(locations, prj = NULL, src = c("epqs", "aws"), ...)
+get_elev_point(
+  locations,
+  prj = NULL,
+  src = c("epqs", "aws"),
+  overwrite = FALSE,
+  ...
+)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
@@ -14,9 +20,11 @@ first column and y (e.g. latitude) as the second column, a
 Elevation for these points will be returned in the 
 originally supplied class.}
 
-\item{prj}{A PROJ.4 string defining the projection of the locations argument. 
-If a \code{SpatialPoints} or \code{SpatialPointsDataFrame} is 
-provided, the PROJ.4 string will be taken from that.  This 
+\item{prj}{A string defining the projection of the locations argument. The 
+string needs to be an acceptable SRS_string for 
+\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
+object, a \code{sp} object or a \code{raster} object 
+is provided, the string will be taken from that.  This 
 argument is required for a \code{data.frame} of locations.}
 
 \item{src}{A character indicating which API to use, either "epqs" or "aws" 
@@ -25,6 +33,11 @@ of points (e.g. > 500).  The "aws" source may be quicker in these
 cases provided the points are in a similar geographic area.  The 
 "aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
+
+\item{overwrite}{A logical indicating that existing \code{elevation} and 
+\code{elev_units} columns should be overwritten.  Default is 
+FALSE and \code{get_elev_point} will error if these columns 
+already exist.}
 
 \item{...}{Additional arguments passed to get_epqs or get_aws_points.  When 
 using "aws" as the source, pay attention to the `z` argument.  A 
@@ -53,11 +66,17 @@ mt_mans <- data.frame(x = -72.8145, y = 44.5438)
 mts <- rbind(mt_wash,mt_mans)
 ll_prj <- "EPSG:4326"
 mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
-                            proj4string = sp::CRS(ll_prj)) 
+                            proj4string = sp::CRS(ll_prj))
+mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, 
+                                       data = data.frame(name = 
+                                       c("Mt. Washington", "Mt. Mansfield"))) 
+mts_raster <- raster::raster(mts_sp, ncol = 2, nrow = 2)
 get_elev_point(locations = mt_wash, prj = ll_prj)
 get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
 get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
 get_elev_point(locations = mts_sp)
+get_elev_point(locations = mts_spdf)
+get_elev_point(locations = mts_raster)
 
 # Code to split into a loop and grab point at a time.
 # This is usually faster for points that are spread apart 

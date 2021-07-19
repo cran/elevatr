@@ -63,7 +63,7 @@ Example usage of each is included below.  For these examples, we can create a da
 set.seed(65.7)
 examp_df <- data.frame(x = runif(3, min = -73, max = -72.5), 
                        y = runif(3, min = 42 , max = 43))
-prj_dd <- "+init=EPSG:4326"
+prj_dd <- "EPSG:4326"
 
 # Create and example data.frame with additional columns
 cats <- data.frame(category = c("H", "M", "L"))
@@ -139,6 +139,7 @@ plot(lake, add = TRUE)
 Lastly, `...` provides the ability to pass additional arguments to `httr::GET` which is used to access the API endpoints.  While any `httr::GET` arguments may be used, this will most likely be used to pass on configuration arguments such as `httr::timeout()` or `httr::verbose()` via a named argument, `config` to `httr::GET`.  The `httr::timeout()` can be used to increase the timeout if downloads are timing out.  For instance:
 
 ```{r timeout}
+library(httr)
 # Increase timeout:
 get_elev_raster(lake, z = 5, config = timeout(5))
 ```
@@ -146,6 +147,7 @@ get_elev_raster(lake, z = 5, config = timeout(5))
 Lastly, multiple configurations may be passed.  Below is an example combining `httr::timeout()` with `httr::verbose()`.
 
 ```{r timeout_verbose}
+library(httr)
 # Increase timeout:
 get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
 ```
