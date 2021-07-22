@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
              person("Tarak","Shah", role = "ctb"),
@@ -28,11 +28,11 @@ RoxygenNote: 7.1.1
 Suggests: testthat, knitr, rmarkdown, formatR, rgdal, progress
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-07-19 20:04:57 UTC; JHollist
+Packaged: 2021-07-21 17:31:34 UTC; JHollist
 Author: Jeffrey Hollister [aut, cre] (<https://orcid.org/0000-0002-9254-9740>),
   Tarak Shah [ctb],
   Alec L. Robitaille [ctb] (<https://orcid.org/0000-0002-4706-1762>),
   Marcus W. Beck [rev] (<https://orcid.org/0000-0002-4996-0059>),
   Mike Johnson [ctb] (<https://orcid.org/0000-0002-5288-8350>)
 Repository: CRAN
-Date/Publication: 2021-07-19 20:50:02 UTC
+Date/Publication: 2021-07-22 04:40:15 UTC
