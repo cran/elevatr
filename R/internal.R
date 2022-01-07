@@ -2,6 +2,8 @@
 #' rounding to tile occurs in \code{get_tilexy}
 #' @keywords internal
 latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
+  # Code assumes lon is 180 to 180, so converts to that
+  lon_deg <- ifelse(lon_deg > 180, lon_deg - 360, lon_deg)
   #Code from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Coordinates_to_tile_numbers_2
   lat_rad <- lat_deg * pi /180
   n <- 2.0 ^ zoom
@@ -13,10 +15,14 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' function to get a data.frame of all xyz tiles to download
 #' @keywords internal
 get_tilexy <- function(bbx,z){
-  min_tile <- latlong_to_tilexy(bbx[1,1],bbx[2,1],z)
-  max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
-  x_all <- seq(from = floor(min_tile[1]), to = ceiling(max_tile[1]))
-  y_all <- seq(from = ceiling(min_tile[2]), to = floor(max_tile[2]))
+  #Convert to -180 - +180
+  bbx["x",] <- ifelse(bbx["x",] > 180, bbx["x",] - 360, bbx["x",])
+  min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,1],bbx[2,1],z))
+  max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,2],bbx[2,2],z))
+  x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
+  y_all <- seq(from = floor(min_tile[2]), to = floor(max_tile[2]))
+  
+  
   if(z == 1){
     x_all <- x_all[x_all<2]
     y_all <- y_all[y_all<2]
@@ -24,8 +30,25 @@ get_tilexy <- function(bbx,z){
     x_all <- x_all[x_all<1]
     y_all <- y_all[y_all<1]
   }
+  
+  
   return(expand.grid(x_all,y_all))
 }
+
+#' function to get a data.frame of all xyz tiles to download
+#' @keywords internal
+get_tilexy_coords <- function(locations,z){
+  coords <- sp::coordinates(locations)
+  
+  tiles <- latlong_to_tilexy(coords[,1],coords[,2],z)
+  tiles <- matrix(tiles, nrow = nrow(coords), ncol = 2)
+  tiles <- floor(tiles)
+  tiles <- unique(tiles)
+  
+  tiles
+}
+
+
 
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
@@ -105,6 +128,7 @@ loc_check <- function(locations, prj = NULL){
                                        proj4string = sp::CRS(SRS_string = prj))
       }
     }
+    
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nfeature)) 
   } else if(attributes(class(locations)) %in% c("raster","sp")){
@@ -146,6 +170,28 @@ loc_check <- function(locations, prj = NULL){
                                                 sp::coordinates(locations)))))
     }
   }
+  
+  #check for long>180
+  if(is.null(prj)){
+    prj_test <- sf::st_crs(locations)
+  } else {
+    prj_test <- prj
+  }
+  
+  lll <- any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) |
+               grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
+               grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
+               grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
+               grepl("\\blonglat\\b", st_crs(prj_test)) |
+               grepl("\\blatlong\\b", st_crs(prj_test)) |
+               grepl("\\b4326\\b", st_crs(prj_test)))
+  
+  if(lll){
+    if(any(sp::coordinates(locations)[,1]>180)){
+      stop("The elevatr package requires longitude in a range from -180 to 180.")
+    } 
+  }
+  
 locations
 } 
 
@@ -155,12 +201,13 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   
-  lll <- grepl("GEOGCRS",prj) |
-    grepl("GEODCRS",prj) |
-    grepl("GEODETICCRS",prj) |
-    grepl("GEOGRAPHICCRS",prj) |
-    grepl("longlat", prj) |
-    grepl("latlong", prj)
+  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
+               grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
+               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
+               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
+               grepl("\\blonglat\\b", sf::st_crs(prj)) |
+               grepl("\\blatlong\\b", sf::st_crs(prj)) |
+               grepl("\\b4326\\b", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -193,6 +240,10 @@ proj_expand <- function(locations,prj,expand){
   }
   bbx <- bbox_to_sp(bbx, prj = prj)
   bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
+  bbx_coord_check <- as.numeric(bbx)
+  if(any(!bbx_coord_check >= -180 & bbx_coord_check <= 360)){
+    stop("The elevatr package requires longitude in a range from -180 to 180.")
+  } 
   bbx
   
   #sf expand - save for later
@@ -288,4 +339,18 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
   
   num_megabytes <- (num_rows * num_cols * bits)/8388608
   num_megabytes
+}
+
+#' OpenTopo Key
+#' 
+#' The OpenTopography API now requires an API Key.  This function will grab your
+#' key from an .Renviron file
+#' 
+#' @keywords internal
+get_opentopo_key <- function(){
+  if(Sys.getenv("OPENTOPO_KEY")==""){
+    stop("You have not set your OpenTopography API Key.
+         Please use elevatr::set_opentopo_key().")
+  }
+  Sys.getenv("OPENTOPO_KEY")
 }
