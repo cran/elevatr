@@ -98,8 +98,8 @@ library(httr)
 # Increase timeout:
 get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
 
-## -----------------------------------------------------------------------------
-lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
-plot(lake_srtmgl1)
-plot(lake, add = TRUE)
+## ---- eval=FALSE--------------------------------------------------------------
+#  lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
+#  plot(lake_srtmgl1)
+#  plot(lake, add = TRUE)
 

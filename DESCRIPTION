@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.4.2
+Version: 0.4.4
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
              person("Tarak","Shah", role = "ctb"),
@@ -17,22 +17,22 @@ Description: Several web services are available that provide access to elevation
              elevation services.  Currently, the package supports access to the
              Amazon Web Services Terrain Tiles <https://registry.opendata.aws/terrain-tiles/>, 
              the Open Topography Global Datasets API <https://opentopography.org/developers/>, 
-             and the USGS Elevation Point Query Service <https://nationalmap.gov/epqs/>.
+             and the USGS Elevation Point Query Service <https://apps.nationalmap.gov/epqs/>.
 Depends: R (>= 3.5.0)
 Imports: sp, raster, httr, jsonlite, progressr, sf, future, furrr,
-        purrr, methods, units, slippymath
+        purrr, methods, units, slippymath, curl
 License: CC0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Suggests: testthat, knitr, rmarkdown, formatR, rgdal, progress
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-01-07 21:34:00 UTC; JHollist
+Packaged: 2023-05-30 19:26:52 UTC; JHollist
 Author: Jeffrey Hollister [aut, cre] (<https://orcid.org/0000-0002-9254-9740>),
   Tarak Shah [ctb],
   Alec L. Robitaille [ctb] (<https://orcid.org/0000-0002-4706-1762>),
   Marcus W. Beck [rev] (<https://orcid.org/0000-0002-4996-0059>),
   Mike Johnson [ctb] (<https://orcid.org/0000-0002-5288-8350>)
 Repository: CRAN
-Date/Publication: 2022-01-07 22:12:41 UTC
+Date/Publication: 2023-05-30 20:00:02 UTC

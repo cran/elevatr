@@ -70,7 +70,7 @@ loc_check <- function(locations, prj = NULL){
     nfeature <- nrow(locations)
   }
   
-  if(class(locations)=="data.frame"){ 
+  if(inherits(locations, "data.frame")){ 
     if(is.null(prj)){
       stop("Please supply a valid crs via locations or prj.")
     }
@@ -92,7 +92,7 @@ loc_check <- function(locations, prj = NULL){
                                proj4string = sp::CRS(SRS_string = prj),
                                data = df)
     }
-  } else if(class(locations) == "SpatialPoints"){
+  } else if(inherits(locations, "SpatialPoints")){
     
     crs_check <- is.na(st_crs(st_as_sf(locations)))
     if(crs_check &  is.null(prj)){
@@ -114,7 +114,7 @@ loc_check <- function(locations, prj = NULL){
                       elevation = vector("numeric", nrow(
                         sp::coordinates(locations)))))
     
-  } else if(class(locations) == "SpatialPointsDataFrame"){
+  } else if(inherits(locations,"SpatialPointsDataFrame")){
     crs_check <- is.na(st_crs(st_as_sf(locations)))
     if(crs_check & is.null(prj)) {
       stop("Please supply a valid crs via locations or prj.")
@@ -178,13 +178,13 @@ loc_check <- function(locations, prj = NULL){
     prj_test <- prj
   }
   
-  lll <- any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) |
-               grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
-               grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
-               grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
-               grepl("\\blonglat\\b", st_crs(prj_test)) |
-               grepl("\\blatlong\\b", st_crs(prj_test)) |
-               grepl("\\b4326\\b", st_crs(prj_test)))
+  lll <- sf::st_is_longlat(prj_test)
+  #any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) | 
+  #     grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
+  #     grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
+  #     grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
+  #     grepl("\\blonglat\\b", st_crs(prj_test)) |
+  #     grepl("\\blatlong\\b", st_crs(prj_test)))
   
   if(lll){
     if(any(sp::coordinates(locations)[,1]>180)){
@@ -201,13 +201,13 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   
-  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
-               grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
-               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
-               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
-               grepl("\\blonglat\\b", sf::st_crs(prj)) |
-               grepl("\\blatlong\\b", sf::st_crs(prj)) |
-               grepl("\\b4326\\b", sf::st_crs(prj)))
+  lll <- sf::st_is_longlat(prj)
+    #any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
+    #           grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\blonglat\\b", sf::st_crs(prj)) |
+    #           grepl("\\blatlong\\b", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -258,7 +258,7 @@ proj_expand <- function(locations,prj,expand){
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  
+
   loc_wm <- sp::spTransform(loc, raster::crs(rast))
   if(clip == "locations" & !grepl("Points", class(loc_wm))){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
