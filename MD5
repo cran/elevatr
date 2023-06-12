@@ -1,4 +1,4 @@
-d9acca646d09df98ad3f3b45b2606391 *DESCRIPTION
+aa830a1147950f9b6947d3855b70bd60 *DESCRIPTION
 7d9be8193ece818d549bd0d0b3742499 *NAMESPACE
 d9a5c33b4237ec4cc9c2958d8c2f88a2 *R/data.R
 9ed60f4bfa6616101b6db2dc54b2bf60 *R/elevatr.R
@@ -6,7 +6,7 @@ d9a5c33b4237ec4cc9c2958d8c2f88a2 *R/data.R
 3cf10b47c689b61efa711a8a0555fd37 *R/get_elev_raster.R
 d033e71e5546777fb97ca209e4ce5557 *R/internal.R
 7a62f1ab1d6511d90c745603e96360ba *R/sysdata.rda
-98333281f722218eb867873ff0fd725c *R/zzz.R
+17164db0f41cb74cb8d9d5c471879ae0 *R/zzz.R
 4c626aed6997047465f6805c6d8b456e *README.md
 d41e388d632ede2b8ac8eb5f62a32253 *build/vignette.rds
 b7dcc198b387b2c353d3211edecbb819 *data/lake.rda
@@ -16,7 +16,7 @@ a1433be5020af5c5622a8d18d50ff383 *inst/CITATION
 9fc8eed780e45d8d5b1d12cc52e6f7ba *inst/bug.R
 5eea8afd8dbdc3c2669953291fc76ac5 *inst/doc/introduction_to_elevatr.R
 69df9c3eb45415d0fc5ea955ab20bbc9 *inst/doc/introduction_to_elevatr.Rmd
-0940db481668c5ea916472fc4eafc9f7 *inst/doc/introduction_to_elevatr.html
+40ef968365ad05959409dbc7fc9b4466 *inst/doc/introduction_to_elevatr.html
 d88440f3026b7a773f9e5873bf029596 *man/bbox_to_sp.Rd
 1260ebb477b151e55424433bdfdfb293 *man/clip_it.Rd
 38cfde5a97807daecc8bdd841d1d45f8 *man/elevatr.Rd
