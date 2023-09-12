@@ -1,23 +1,22 @@
 #' Get Raster Elevation
 #' 
 #' Several web services provide access to raster elevation. Currently, this 
-#' function provides access to the Amazon Web Services Terrian Tiles and the 
+#' function provides access to the Amazon Web Services Terrain Tiles and the 
 #' Open Topography global datasets API. The function accepts a \code{data.frame} 
-#' of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A 
-#' \code{raster} object is returned.
+#' of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A 
+#' \code{RasterLayer} object is returned. In subsequent versions, a \code{SpatRaster}
+#' will be returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
-#'                  \code{sp}, \code{sf}, or \code{raster} object as input. 
+#'                   \code{sf}, or \code{terra} object as input. 
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
 #'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 #'           The z is not required for the OpenTopography data sources. 
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
 #'            argument is required for a \code{data.frame} of locations.
 #' @param src A character indicating which API to use.  Currently supports "aws" 
 #'            and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global 
@@ -32,7 +31,7 @@
 #'             The default value is "tile" which returns the full tiles.  Other 
 #'             options are "bbox" which returns the DEM clipped to the bounding 
 #'             box of the original locations (or expanded bounding box if used), 
-#'             or "locations" if the spatials data (e.g. polygons) in the input 
+#'             or "locations" if the spatial data (e.g. polygons) in the input 
 #'             locations should be used to clip the DEM.  Locations are not used 
 #'             to clip input point datasets.  Instead the bounding box is used.
 #' @param verbose Toggles on and off the note about units and coordinate 
@@ -50,7 +49,9 @@
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
 #' @return Function returns a \code{RasterLayer} in the projection 
-#'         specified by the \code{prj} argument.
+#'         specified by the \code{prj} argument or in the projection of the 
+#'         provided locations.  In subsequent versions, a \code{SpatRaster}
+#'         will be returned.
 #' @details Currently, the \code{get_elev_raster} function utilizes the 
 #'          Amazon Web Services 
 #'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
@@ -63,23 +64,21 @@
 #'          object submitted for \code{locations} argument, and the z argument 
 #'          must be specified by the user.   
 #' @export
-#' @importFrom sp wkt
 #' @examples 
 #' \dontrun{
+#' library(elevatr)
+#' library(sf)
 #' data(lake)
-#' 
-#' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-#'                                max=sp::bbox(lake)[1,2]),
-#'                      y = runif(6,min=sp::bbox(lake)[2,1], 
-#'                                max=sp::bbox(lake)[2,2]))
-#' # Example for PROJ > 5.2.0
-#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-#' 
-#' # Example for PROJ < 5.2.0 
-#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-
-#' x <- get_elev_raster(lake, z = 12, serial = TRUE)
+#' lake_buff  <- st_buffer(lake, 1000)
+#' loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+#'                                max=sf::st_bbox(lake)$xmax),
+#'                      y = runif(6,min=sf::st_bbox(lake)$ymin, 
+#'                                max=sf::st_bbox(lake)$ymax))
+#'                                
+#' x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
+#' x <- get_elev_raster(lake, z = 12)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
+#' x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 #' }
 
 get_elev_raster <- function(locations, z, prj = NULL, 
@@ -96,15 +95,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
   src  <- match.arg(src)
   clip <- match.arg(clip) 
   
-  # Check location type and if sp, set prj.  If no prj (for either) then error
+  # Check location type and if sf, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
-    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      prj <- sp::wkt(locations)
-    } else {
-      prj <- sp::proj4string(locations)
-    }
+    prj <- sf::st_crs(locations)
   }
    #need to check what is going on with PRJ when no prj passed.
   # Check download size and provide feedback, stop if too big!
@@ -152,14 +147,16 @@ get_elev_raster <- function(locations, z, prj = NULL,
   }
   
   attr(raster_elev, "sources") <- sources
-  raster_elev
+  #Returning raster for now
+  #Switch to SpatRaster in near future.
+  raster::raster(raster_elev)
   
 }
 
 #' Get a digital elevation model from the AWS Terrain Tiles
 #' 
 #' This function uses the AWS Terrain Tile service to retrieve an elevation
-#' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
+#' raster from the geotiff service.  It accepts a \code{sf::st_bbox} object as 
 #' input and returns a single raster object covering that extent.   
 #' 
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
@@ -167,17 +164,16 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://github.com/tilezen/joerd/tree/master/docs} 
 #' 
-#' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
+#' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
+#'                  \code{sp}, \code{sf}, or \code{raster} object as input.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
-#'            argument is required for a \code{data.frame} of locations. 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
+#'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -309,8 +305,8 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   files    <- unlist(raster_list)
  
   if(is.null(target_prj)){
-    r <- raster::raster(files[1])
-    target_prj <- raster::crs(r)
+    r <- terra::rast(files[1])
+    target_prj <- terra::crs(r)
   }
   
   sf::gdal_utils(util = "warp", 
@@ -325,11 +321,11 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
                  source = destfile, 
                  destination = destfile2,
                  options = c("-r", method,
-                   "-t_srs", as.character(target_prj))
+                   "-t_srs", sf::st_crs(target_prj)$wkt)
   )
   
   if(returnRaster){
-    raster::raster(destfile2)
+    terra::rast(destfile2)
   } else {
     destfile2
   }
@@ -343,12 +339,10 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, an \code{sf}, or \code{raster} object as input. 
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
-#'            argument is required for a \code{data.frame} of locations. 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
+#'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the SRTM data. 
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
@@ -372,11 +366,12 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                      gl1 = "SRTMGL1",
                      alos = "AW3D30",
                      srtm15plus = "SRTM15Plus")
+  
   url <- paste0(base_url, data_set,
-                "&west=",min(bbx[1,]),
-                "&south=",min(bbx[2,]),
-                "&east=",max(bbx[1,]),
-                "&north=",max(bbx[2,]),
+                "&west=",min(bbx["xmin"]),
+                "&south=",min(bbx["ymin"]),
+                "&east=",max(bbx["xmax"]),
+                "&north=",max(bbx["ymax"]),
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
  
